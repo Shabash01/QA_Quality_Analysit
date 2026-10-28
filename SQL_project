@@ -1,0 +1,652 @@
+# PROJECT Bug Escape & QA 
+create database QA_Quality_Analyzer;
+
+use QA_Quality_Analyzer;
+
+Create table Projects (
+Project_ID int primary key,
+Project_Name varchar(50),
+Application_Type varchar(50),
+Start_Date date
+);
+
+create table Test_Cases (
+TestCase_ID int primary key,
+Project_ID int, 
+TestCase_Name varchar(50),
+Test_Type varchar(50),
+Priority varchar(50)
+);
+
+
+create table Test_Executions (
+Execution_ID Int primary key,
+TestCase_ID int,
+Execution_Date date,
+Status ENUM('Pass','Fail','Blocked'),
+Environment ENUM('QA','Pre-Prod','Prod')
+);
+
+create table Defects (
+Project_ID int primary key,
+Execution_ID int,
+Severity Enum ('Critical','Major','Minor'),
+Found_Environment varchar(20),
+Defect_Status varchar (20)
+);
+alter table defects drop Project_id;
+alter table defects add Project_ID int;
+select * from defects;
+alter table defects add Defect_ID int primary key;
+
+insert into Projects (Project_ID, Project_Name, Application_Type, Start_Date) values 
+(1, 'PropStream', 'Web Application', '2026-01-10'),
+(2, 'Online Banking', 'Web Application', '2026-02-15'),
+(3, 'Food Delivery', 'Mobile Application', '2026-03-01'),
+(4, 'E-Commerce', 'Web Application', '2026-03-20'),
+(5, 'Healthcare Portal', 'Web Application', '2026-04-05');
+
+INSERT INTO Test_Cases
+(TestCase_ID, Project_ID, TestCase_Name, Test_Type, Priority)
+VALUES
+(101, 1, 'Login Validation', 'Functional', 'High'),
+(102, 1, 'Subscription Payment', 'Regression', 'High'),
+(103, 1, 'Property Search', 'Functional', 'Medium'),
+(104, 1, 'Contact Management', 'Smoke', 'High'),
+(105, 2, 'Fund Transfer', 'Functional', 'High'),
+(106, 2, 'Transaction History', 'Regression', 'Medium'),
+(107, 3, 'Place Food Order', 'Functional', 'High'),
+(108, 3, 'Apply Discount Coupon', 'Regression', 'Medium'),
+(109, 4, 'Add Product to Cart', 'Functional', 'High'),
+(110, 4, 'Checkout Payment', 'Regression', 'High'),
+(111, 5, 'Book Appointment', 'Functional', 'Medium'),
+(112, 5, 'Patient Registration', 'Smoke', 'High');
+
+
+
+INSERT INTO Test_Executions
+(Execution_ID, TestCase_ID, Execution_Date, Status, Environment)
+VALUES
+(1001, 101, '2026-09-01', 'Pass', 'QA'),
+(1002, 102, '2026-09-01', 'Fail', 'QA'),
+(1003, 103, '2026-09-02', 'Pass', 'QA'),
+(1004, 104, '2026-09-02', 'Pass', 'Pre-Prod'),
+(1005, 105, '2026-09-03', 'Fail', 'QA'),
+(1006, 106, '2026-09-03', 'Pass', 'QA'),
+(1007, 107, '2026-09-04', 'Fail', 'Prod'),
+(1008, 108, '2026-09-04', 'Pass', 'QA'),
+(1009, 109, '2026-09-05', 'Pass', 'QA'),
+(1010, 110, '2026-09-05', 'Fail', 'Pre-Prod'),
+(1011, 111, '2026-09-06', 'Blocked', 'QA'),
+(1012, 112, '2026-09-06', 'Pass', 'QA'),
+(1013, 101, '2026-09-08', 'Pass', 'Pre-Prod'),
+(1014, 102, '2026-09-08', 'Pass', 'QA'),
+(1015, 105, '2026-09-09', 'Fail', 'Prod'),
+(1016, 107, '2026-09-09', 'Pass', 'QA'),
+(1017, 110, '2026-09-10', 'Pass', 'Pre-Prod'),
+(1018, 103, '2026-09-10', 'Fail', 'Prod');
+
+select * from Defects;
+INSERT INTO Defects
+(Defect_ID, Project_ID, Execution_ID, Severity, Found_Environment, Defect_Status)
+VALUES
+(201, 1, 1002, 'Critical', 'QA', 'Open'),
+(202, 1, 1003, 'Major', 'Prod', 'Open'),
+(203, 1, 1004, 'Minor', 'Pre-Prod', 'Closed'),
+(204, 2, 1005, 'Critical', 'QA', 'Open'),
+(205, 2, 1006, 'Major', 'Prod', 'Closed'),
+(206, 2, 1015, 'Critical', 'Prod', 'Open'),
+(207, 3, 1007, 'Critical', 'Prod', 'Open'),
+(208, 3, 1008, 'Minor', 'QA', 'Closed'),
+(209, 4, 1010, 'Major', 'Pre-Prod', 'Open'),
+(210, 4, 1017, 'Minor', 'Prod', 'Closed'),
+(211, 5, 1011, 'Major', 'QA', 'Open'),
+(212, 5, 1012, 'Minor', 'Pre-Prod', 'Closed'),
+(213, 1, 1018, 'Major', 'Prod', 'Open'),
+(214, 3, 1016, 'Minor', 'QA', 'Closed'),
+(215, 4, 1009, 'Critical', 'Prod', 'Open');
+
+
+use qa_quality_analyzer;
+INSERT INTO Test_Cases
+(TestCase_ID, Project_ID, TestCase_Name, Test_Type, Priority)
+VALUES
+(113, 1, 'Invalid Login Password', 'Functional', 'High'),
+(114, 1, 'Forgot Password', 'Functional', 'Medium'),
+(115, 1, 'Password Reset Email', 'Regression', 'Medium'),
+(116, 1, 'User Logout', 'Smoke', 'High'),
+(117, 1, 'Session Timeout', 'Security', 'High'),
+(118, 1, 'Multiple Login Attempts', 'Security', 'High'),
+(119, 1, 'Remember Me Option', 'Functional', 'Low'),
+(120, 1, 'User Profile Update', 'Functional', 'Medium'),
+(121, 1, 'Email Verification', 'Regression', 'High'),
+(122, 1, 'Account Lockout', 'Security', 'High'),
+(123, 1, 'Subscription Upgrade', 'Functional', 'High'),
+(124, 1, 'Subscription Downgrade', 'Regression', 'High'),
+(125, 1, 'Payment Failure Handling', 'Functional', 'High'),
+(126, 1, 'Payment Refund', 'Regression', 'Medium'),
+(127, 1, 'Invoice Generation', 'Functional', 'Medium'),
+(128, 1, 'Search by Address', 'Functional', 'High'),
+(129, 1, 'Search by Owner Name', 'Functional', 'Medium'),
+(130, 1, 'Search Filter Validation', 'Regression', 'Medium'),
+(131, 1, 'Property Details Display', 'Smoke', 'High'),
+(132, 1, 'Save Property to Favorites', 'Functional', 'Medium'),
+(133, 1, 'Remove Property from Favorites', 'Regression', 'Low'),
+(134, 1, 'Contact Creation', 'Functional', 'High'),
+(135, 1, 'Contact Edit', 'Regression', 'Medium'),
+(136, 1, 'Contact Deletion', 'Functional', 'Medium'),
+(137, 1, 'Export Property Data', 'Regression', 'High'),
+(138, 1, 'Pagination Validation', 'Functional', 'Low'),
+(139, 1, 'API Response Validation', 'API', 'High'),
+(140, 1, 'Concurrent User Access', 'Performance', 'High'),
+(141, 2, 'Beneficiary Registration', 'Functional', 'High'),
+(142, 2, 'Invalid Account Number', 'Functional', 'High'),
+(143, 2, 'Insufficient Balance Transfer', 'Regression', 'High'),
+(144, 2, 'Transfer Limit Validation', 'Functional', 'High'),
+(145, 2, 'Daily Transfer Limit', 'Regression', 'Medium'),
+(146, 2, 'Transaction Confirmation', 'Smoke', 'High'),
+(147, 2, 'Duplicate Transaction Prevention', 'Security', 'High'),
+(148, 2, 'Transaction Cancellation', 'Functional', 'Medium'),
+(149, 2, 'Transaction History Filter', 'Functional', 'Medium'),
+(150, 2, 'Transaction Date Range', 'Regression', 'Low'),
+(151, 2, 'Account Balance Display', 'Smoke', 'High'),
+(152, 2, 'Failed Transfer Recovery', 'Regression', 'High'),
+(153, 2, 'Bank Statement Download', 'Functional', 'Medium'),
+(154, 2, 'OTP Verification', 'Security', 'High'),
+(155, 2, 'Session Expiry During Transfer', 'Security', 'High'),
+(156, 2, 'Invalid OTP Handling', 'Functional', 'High'),
+(157, 2, 'Multiple Beneficiary Support', 'Functional', 'Medium'),
+(158, 2, 'Transaction Notification', 'Regression', 'Medium'),
+(159, 2, 'Concurrent Transfer Requests', 'Performance', 'High'),
+(160, 2, 'Transaction API Validation', 'API', 'High'),
+(161, 3, 'Restaurant Search', 'Functional', 'High'),
+(162, 3, 'Menu Item Availability', 'Functional', 'Medium'),
+(163, 3, 'Add Item to Cart', 'Smoke', 'High'),
+(164, 3, 'Remove Item from Cart', 'Regression', 'Low'),
+(165, 3, 'Update Item Quantity', 'Functional', 'Medium'),
+(166, 3, 'Minimum Order Amount', 'Functional', 'Medium'),
+(167, 3, 'Invalid Coupon Code', 'Regression', 'Medium'),
+(168, 3, 'Expired Coupon Validation', 'Functional', 'High'),
+(169, 3, 'Coupon Usage Limit', 'Regression', 'Medium'),
+(170, 3, 'Delivery Address Validation', 'Functional', 'High'),
+(171, 3, 'Restaurant Delivery Radius', 'Functional', 'Medium'),
+(172, 3, 'Online Payment Failure', 'Regression', 'High'),
+(173, 3, 'Cash on Delivery Option', 'Smoke', 'Medium'),
+(174, 3, 'Order Confirmation Notification', 'Regression', 'Medium'),
+(175, 3, 'Cancel Food Order', 'Functional', 'High'),
+(176, 3, 'Order Tracking Status', 'Functional', 'Medium'),
+(177, 3, 'Restaurant Rating Submission', 'Functional', 'Low'),
+(178, 3, 'Duplicate Order Prevention', 'Security', 'High'),
+(179, 3, 'Peak Hour Order Processing', 'Performance', 'High'),
+(180, 3, 'Order API Validation', 'API', 'High'),
+(181, 4, 'Product Search', 'Functional', 'High'),
+(182, 4, 'Product Category Filter', 'Functional', 'Medium'),
+(183, 4, 'Product Sorting', 'Regression', 'Low'),
+(184, 4, 'Product Details Display', 'Smoke', 'High'),
+(185, 4, 'Add Product to Wishlist', 'Functional', 'Medium'),
+(186, 4, 'Remove Product from Wishlist', 'Regression', 'Low'),
+(187, 4, 'Out of Stock Validation', 'Functional', 'High'),
+(188, 4, 'Shopping Cart Quantity Update', 'Functional', 'Medium'),
+(189, 4, 'Shipping Address Validation', 'Regression', 'High'),
+(190, 4, 'Shipping Cost Calculation', 'Functional', 'Medium'),
+(191, 4, 'Tax Calculation', 'Regression', 'High'),
+(192, 4, 'Payment Gateway Timeout', 'API', 'High'),
+(193, 4, 'Order Confirmation Email', 'Regression', 'Medium'),
+(194, 4, 'Cancel Product Order', 'Functional', 'Medium'),
+(195, 4, 'Return Request Submission', 'Functional', 'Medium'),
+(196, 5, 'Doctor Availability Check', 'Functional', 'High'),
+(197, 5, 'Appointment Rescheduling', 'Regression', 'Medium'),
+(198, 5, 'Duplicate Appointment Prevention', 'Functional', 'High'),
+(199, 5, 'Patient Record Access', 'Security', 'High'),
+(200, 5, 'Appointment Reminder Notification', 'Regression', 'Medium');
+
+INSERT INTO Test_Executions
+(Execution_ID, TestCase_ID, Execution_Date, Status, Environment)
+VALUES
+(1019, 113, '2026-09-11', 'Pass', 'QA'),
+(1020, 114, '2026-09-11', 'Fail', 'QA'),
+(1021, 115, '2026-09-12', 'Pass', 'Pre-Prod'),
+(1022, 116, '2026-09-12', 'Pass', 'QA'),
+(1023, 117, '2026-09-13', 'Fail', 'QA'),
+(1024, 118, '2026-09-13', 'Pass', 'Pre-Prod'),
+(1025, 119, '2026-09-14', 'Pass', 'QA'),
+(1026, 120, '2026-09-14', 'Blocked', 'QA'),
+(1027, 121, '2026-09-15', 'Pass', 'QA'),
+(1028, 122, '2026-09-15', 'Fail', 'Prod'),
+(1029, 123, '2026-09-16', 'Pass', 'QA'),
+(1030, 124, '2026-09-16', 'Fail', 'Pre-Prod'),
+(1031, 125, '2026-09-17', 'Fail', 'QA'),
+(1032, 126, '2026-09-17', 'Pass', 'QA'),
+(1033, 127, '2026-09-18', 'Pass', 'Pre-Prod'),
+(1034, 128, '2026-09-18', 'Pass', 'QA'),
+(1035, 129, '2026-09-19', 'Fail', 'QA'),
+(1036, 130, '2026-09-19', 'Pass', 'QA'),
+(1037, 131, '2026-09-20', 'Pass', 'Pre-Prod'),
+(1038, 132, '2026-09-20', 'Pass', 'QA'),
+(1039, 133, '2026-09-21', 'Blocked', 'QA'),
+(1040, 134, '2026-09-21', 'Fail', 'QA'),
+(1041, 135, '2026-09-22', 'Pass', 'QA'),
+(1042, 136, '2026-09-22', 'Pass', 'Pre-Prod'),
+(1043, 137, '2026-09-23', 'Fail', 'Prod'),
+(1044, 138, '2026-09-23', 'Pass', 'QA'),
+(1045, 139, '2026-09-24', 'Pass', 'QA'),
+(1046, 140, '2026-09-24', 'Fail', 'Pre-Prod'),
+(1047, 141, '2026-09-25', 'Pass', 'QA'),
+(1048, 142, '2026-09-25', 'Fail', 'QA'),
+(1049, 143, '2026-09-26', 'Pass', 'Pre-Prod'),
+(1050, 144, '2026-09-26', 'Pass', 'QA'),
+(1051, 145, '2026-09-27', 'Fail', 'Prod'),
+(1052, 146, '2026-09-27', 'Pass', 'QA'),
+(1053, 147, '2026-09-28', 'Fail', 'QA'),
+(1054, 148, '2026-09-28', 'Pass', 'Pre-Prod'),
+(1055, 149, '2026-09-29', 'Pass', 'QA'),
+(1056, 150, '2026-09-29', 'Blocked', 'QA'),
+(1057, 151, '2026-09-30', 'Pass', 'Pre-Prod'),
+(1058, 152, '2026-09-30', 'Fail', 'QA'),
+(1059, 153, '2026-10-01', 'Pass', 'QA'),
+(1060, 154, '2026-10-01', 'Fail', 'Prod'),
+(1061, 155, '2026-10-02', 'Pass', 'QA'),
+(1062, 156, '2026-10-02', 'Fail', 'Pre-Prod'),
+(1063, 157, '2026-10-03', 'Pass', 'QA'),
+(1064, 158, '2026-10-03', 'Pass', 'QA'),
+(1065, 159, '2026-10-04', 'Fail', 'Pre-Prod'),
+(1066, 160, '2026-10-04', 'Pass', 'QA'),
+(1067, 161, '2026-10-05', 'Fail', 'Prod'),
+(1068, 162, '2026-10-05', 'Pass', 'QA'),
+(1069, 163, '2026-10-06', 'Pass', 'Pre-Prod'),
+(1070, 164, '2026-10-06', 'Fail', 'QA'),
+(1071, 165, '2026-10-07', 'Pass', 'QA'),
+(1072, 166, '2026-10-07', 'Blocked', 'QA'),
+(1073, 167, '2026-10-08', 'Fail', 'Pre-Prod'),
+(1074, 168, '2026-10-08', 'Pass', 'QA'),
+(1075, 169, '2026-10-09', 'Pass', 'QA'),
+(1076, 170, '2026-10-09', 'Fail', 'Prod'),
+(1077, 171, '2026-10-10', 'Pass', 'QA'),
+(1078, 172, '2026-10-10', 'Fail', 'Pre-Prod'),
+(1079, 173, '2026-10-11', 'Pass', 'QA'),
+(1080, 174, '2026-10-11', 'Pass', 'Pre-Prod'),
+(1081, 175, '2026-10-12', 'Fail', 'QA'),
+(1082, 176, '2026-10-12', 'Pass', 'QA'),
+(1083, 177, '2026-10-13', 'Pass', 'Pre-Prod'),
+(1084, 178, '2026-10-13', 'Fail', 'Prod'),
+(1085, 179, '2026-10-14', 'Pass', 'QA'),
+(1086, 180, '2026-10-14', 'Pass', 'QA'),
+(1087, 181, '2026-10-15', 'Fail', 'QA'),
+(1088, 182, '2026-10-15', 'Pass', 'Pre-Prod'),
+(1089, 183, '2026-10-16', 'Pass', 'QA'),
+(1090, 184, '2026-10-16', 'Fail', 'Prod'),
+(1091, 185, '2026-10-17', 'Pass', 'QA'),
+(1092, 186, '2026-10-17', 'Blocked', 'QA'),
+(1093, 187, '2026-10-18', 'Fail', 'Pre-Prod'),
+(1094, 188, '2026-10-18', 'Pass', 'QA'),
+(1095, 189, '2026-10-19', 'Pass', 'QA'),
+(1096, 190, '2026-10-19', 'Fail', 'Prod'),
+(1097, 191, '2026-10-20', 'Pass', 'QA'),
+(1098, 192, '2026-10-20', 'Fail', 'Pre-Prod'),
+(1099, 193, '2026-10-21', 'Pass', 'QA'),
+(1100, 194, '2026-10-21', 'Pass', 'Pre-Prod');
+
+
+
+INSERT INTO Defects
+(Defect_ID, Project_ID, Execution_ID, Severity, Found_Environment, Defect_Status)
+VALUES
+(216, 1, 1019, 'Minor', 'QA', 'Closed'),
+(217, 1, 1020, 'Major', 'QA', 'Open'),
+(218, 1, 1021, 'Minor', 'Pre-Prod', 'Closed'),
+(219, 1, 1022, 'Major', 'QA', 'Closed'),
+(220, 1, 1023, 'Critical', 'QA', 'Open'),
+(221, 1, 1024, 'Minor', 'Pre-Prod', 'Closed'),
+(222, 1, 1025, 'Minor', 'QA', 'Closed'),
+(223, 1, 1026, 'Major', 'QA', 'Open'),
+(224, 1, 1027, 'Minor', 'QA', 'Closed'),
+(225, 1, 1028, 'Critical', 'Prod', 'Open'),
+(226, 1, 1029, 'Major', 'QA', 'Closed'),
+(227, 1, 1030, 'Major', 'Pre-Prod', 'Open'),
+(228, 1, 1031, 'Critical', 'QA', 'Open'),
+(229, 1, 1032, 'Minor', 'QA', 'Closed'),
+(230, 1, 1033, 'Minor', 'Pre-Prod', 'Closed'),
+(231, 1, 1034, 'Major', 'QA', 'Closed'),
+(232, 1, 1035, 'Major', 'QA', 'Open'),
+(233, 1, 1036, 'Minor', 'QA', 'Closed'),
+(234, 1, 1037, 'Minor', 'Pre-Prod', 'Closed'),
+(235, 1, 1038, 'Major', 'QA', 'Closed'),
+
+(236, 2, 1039, 'Major', 'QA', 'Open'),
+(237, 2, 1040, 'Critical', 'QA', 'Open'),
+(238, 2, 1041, 'Minor', 'QA', 'Closed'),
+(239, 2, 1042, 'Minor', 'Pre-Prod', 'Closed'),
+(240, 2, 1043, 'Critical', 'Prod', 'Open'),
+(241, 2, 1044, 'Minor', 'QA', 'Closed'),
+(242, 2, 1045, 'Major', 'QA', 'Closed'),
+(243, 2, 1046, 'Major', 'Pre-Prod', 'Open'),
+(244, 2, 1047, 'Minor', 'QA', 'Closed'),
+(245, 2, 1048, 'Critical', 'QA', 'Open'),
+(246, 2, 1049, 'Minor', 'Pre-Prod', 'Closed'),
+(247, 2, 1050, 'Major', 'QA', 'Closed'),
+(248, 2, 1051, 'Critical', 'Prod', 'Open'),
+(249, 2, 1052, 'Minor', 'QA', 'Closed'),
+(250, 2, 1053, 'Critical', 'QA', 'Open'),
+(251, 2, 1054, 'Minor', 'Pre-Prod', 'Closed'),
+(252, 2, 1055, 'Major', 'QA', 'Open'),
+(253, 2, 1056, 'Major', 'QA', 'Open'),
+(254, 2, 1057, 'Minor', 'Pre-Prod', 'Closed'),
+(255, 2, 1058, 'Critical', 'QA', 'Open'),
+
+(256, 3, 1059, 'Minor', 'QA', 'Closed'),
+(257, 3, 1060, 'Critical', 'Prod', 'Open'),
+(258, 3, 1061, 'Major', 'QA', 'Closed'),
+(259, 3, 1062, 'Major', 'Pre-Prod', 'Open'),
+(260, 3, 1063, 'Minor', 'QA', 'Closed'),
+(261, 3, 1064, 'Minor', 'QA', 'Closed'),
+(262, 3, 1065, 'Critical', 'Pre-Prod', 'Open'),
+(263, 3, 1066, 'Minor', 'QA', 'Closed'),
+(264, 3, 1067, 'Critical', 'Prod', 'Open'),
+(265, 3, 1068, 'Minor', 'QA', 'Closed'),
+(266, 3, 1069, 'Minor', 'Pre-Prod', 'Closed'),
+(267, 3, 1070, 'Major', 'QA', 'Open'),
+(268, 3, 1071, 'Minor', 'QA', 'Closed'),
+(269, 3, 1072, 'Major', 'QA', 'Open'),
+(270, 3, 1073, 'Critical', 'Pre-Prod', 'Open'),
+(271, 3, 1074, 'Minor', 'QA', 'Closed'),
+(272, 3, 1075, 'Major', 'QA', 'Closed'),
+(273, 3, 1076, 'Critical', 'Prod', 'Open'),
+(274, 3, 1077, 'Minor', 'QA', 'Closed'),
+
+(275, 4, 1078, 'Major', 'Pre-Prod', 'Open'),
+(276, 4, 1079, 'Minor', 'QA', 'Closed'),
+(277, 4, 1080, 'Minor', 'Pre-Prod', 'Closed'),
+(278, 4, 1081, 'Critical', 'QA', 'Open'),
+(279, 4, 1082, 'Minor', 'QA', 'Closed'),
+(280, 4, 1083, 'Major', 'Pre-Prod', 'Closed'),
+(281, 4, 1084, 'Critical', 'Prod', 'Open'),
+(282, 4, 1085, 'Minor', 'QA', 'Closed'),
+(283, 4, 1086, 'Minor', 'QA', 'Closed'),
+(284, 4, 1087, 'Major', 'QA', 'Open'),
+(285, 4, 1088, 'Minor', 'Pre-Prod', 'Closed'),
+(286, 4, 1089, 'Major', 'QA', 'Closed'),
+(287, 4, 1090, 'Critical', 'Prod', 'Open'),
+(288, 4, 1091, 'Minor', 'QA', 'Closed'),
+(289, 4, 1092, 'Major', 'QA', 'Open'),
+
+(290, 5, 1093, 'Critical', 'Pre-Prod', 'Open'),
+(291, 5, 1094, 'Minor', 'QA', 'Closed'),
+(292, 5, 1095, 'Major', 'QA', 'Closed'),
+(293, 5, 1096, 'Critical', 'Prod', 'Open'),
+(294, 5, 1097, 'Minor', 'QA', 'Closed'),
+(295, 5, 1098, 'Major', 'Pre-Prod', 'Open'),
+(296, 5, 1099, 'Minor', 'QA', 'Closed'),
+(297, 5, 1100, 'Major', 'Pre-Prod', 'Open'),
+(298, 5, 1019, 'Minor', 'QA', 'Closed'),
+(299, 5, 1020, 'Major', 'QA', 'Open'),
+(300, 5, 1021, 'Minor', 'Pre-Prod', 'Closed');
+
+#1. The QA lead needs a list of Critical and Major defects that are still Open, sorted by severity and then by discovery environment.
+
+select * from defects 
+where severity in ('critical', 'major') and defect_status = 'Open' and Project_id = 1
+order by severity, Found_Environment;
+
+# 2. Release management wants to identify all test executions that failed in Pre-Prod or Prod during September 2026.
+select * from test_executions
+where status = 'Fail' and Environment in ('pre-prod', 'prod')
+and execution_date >= '2026-09-01' and execution_date <='2026-10-01';
+
+#3. The QA manager needs a list of unique environments in which defects have been discovered, to standardize environment reporting.
+select distinct Found_environment from defects;
+
+#4. Identify test cases whose names contain the words 'Payment', 'Login', or 'Search' so the team can review high-risk workflows.
+select * from test_cases 
+where testcase_name like '%login%' 
+or testcase_name like '%Payment%'
+or testcase_name like '%Search%';
+
+#5. Find test executions that are Blocked or have not yet been assigned an execution status, for the daily QA follow-up report.
+select * from test_executions
+where status = 'Blocked' or null;
+
+#6. Identify test cases marked High priority that belong to Functional, Regression, or Security testing.
+select * from test_cases
+where test_type in ('Functional', 'Regression', 'Security') and priority = 'High';
+
+#7. The QA manager wants the total number of test cases for each project, with the projects having the largest test suites shown first.
+select count(TestCase_Id) as tota_tescase_count, Project_id from test_cases
+group by project_id
+order by tota_tescase_count desc;
+
+#8. Calculate the Pass, Fail, and Blocked execution counts for each environment to assess environment stability.
+select environment,
+sum(case when status = 'pass' then 1 else 0 end) As Pass_count,
+sum(case when status = 'Fail' then 1 else 0 end) As Fail_count, 
+sum(case when status = 'Block' then 1 else 0 end) As block_count
+From test_executions
+group by environment;
+
+#9. Calculate the pass percentage for each project. Exclude blocked executions from the pass-rate denominator and explain your calculation.
+select project_id,
+       ROUND(100.0 * SUM(case when status = 'Pass' then 1 else 0 end)
+             / NULLIF(SUM(case when status <> 'Blocked' then 1 else 0 end), 0), 2) as pass_pct
+from test_executions
+group by project_id;
+
+#10. The release manager wants to find projects with more than 10 recorded test executions that have at least one failure.
+select project_id, COUNT(*) AS total_executions
+from test_executions
+group by project_id
+HAVING COUNT(*) > 10
+   AND SUM(case when status = 'Fail' then 1 else 0 end) >= 1;
+
+#11. Calculate the number of Open defects by severity and environment, so the team can prioritize its workload.
+select severity, Found_environment, COUNT(*) AS open_defects
+from defects
+where Defect_Status = 'Open'
+group by severity, Found_environment
+order By open_defects desc;
+
+#12. Find projects whose average number of executions per test case is greater than the overall average across projects.
+with  per_project AS (
+    select project_id,
+           COUNT(*) * 1.0 / COUNT(DISTINCT testcase_id) AS avg_exec_per_tc
+    from test_executions
+    group by project_id
+)
+select project_id, avg_exec_per_tc
+from per_project
+where avg_exec_per_tc > (select avg(avg_exec_per_tc) from per_project);
+
+#13. Calculate each project's Critical defect count, Major defect count, and total defect count for a QA leadership report.
+select project_id,
+       SUM(case when severity = 'Critical' then 1 else 0 end) AS critical_count,
+       SUM(case when severity = 'Major' then 1 else 0 end)    AS major_count,
+       COUNT(*)                                               AS total_defects
+from defects
+group by project_id;
+
+#14. Produce a project quality report showing project name, total test cases, total executions, and total defects.
+select p.project_name,
+       COUNT(DISTINCT tc.testcase_id)  AS total_test_cases,
+       COUNT(DISTINCT te.execution_id) AS total_executions,
+       COUNT(DISTINCT d.defect_id)     AS total_defects
+from projects p
+LEFT JOIN test_cases tc      ON tc.project_id = p.project_id
+LEFT JOIN test_executions te ON te.testcase_id = tc.testcase_id
+LEFT JOIN defects d          ON d.project_id = p.project_id
+GROUP BY p.project_name;
+
+#15. Identify test cases that have never been executed, so QA can improve test coverage.
+select tc.testcase_id, tc.testcase_name
+from test_cases tc
+LEFT JOIN test_executions te ON te.testcase_id = tc.testcase_id
+WHERE te.execution_id IS NULL;
+
+#16. Identify projects that have no recorded defects, while ensuring projects with no executions are still considered.
+SELECT p.project_id, p.project_name
+FROM projects p
+LEFT JOIN defects d ON d.project_id = p.project_id
+WHERE d.defect_id IS NULL;
+
+#17. Find defects whose recorded discovery environment differs from the environment of the linked test execution. These records need investigation.
+select d.defect_id, d.Found_environment, te.execution_id, te.environment
+from defects d
+JOIN test_executions te ON te.execution_id = d.execution_id
+WHERE d.Found_environment <> te.environment;
+
+#18. Generate a defect investigation report containing project name, test case name, execution date, execution status, defect severity, and defect status.
+select p.project_name, tc.testcase_name, te.execution_date,
+       te.status AS execution_status, d.severity, d.Defect_Status
+from defects d
+JOIN test_executions te ON te.execution_id = d.execution_id
+JOIN test_cases tc      ON tc.testcase_id = te.testcase_id
+JOIN projects p         ON p.project_id = tc.project_id
+ORDER BY p.project_name, te.execution_date;
+
+#19. Produce one combined list of project names and test case names for a reporting export, removing duplicate text values.
+select project_name AS name from projects
+UNION
+select testcase_name from test_cases
+ORDER BY name;
+
+#20. Identify test executions that do not have a corresponding defect record. Present these as executions with no linked defect record, not automatically as successful tests.
+select project_name AS name FROM projects
+UNION
+select testcase_name from test_cases
+ORDER BY name;
+
+#21. Categorize projects as 'High Risk', 'Medium Risk', or 'Low Risk' based on their Open Critical and Major defect counts. Define your thresholds before writing the query.
+WITH counts AS (
+    SELECT p.project_id, p.project_name,
+           SUM(CASE WHEN d.severity = 'Critical' THEN 1 ELSE 0 END) AS open_critical,
+           SUM(CASE WHEN d.severity = 'Major' THEN 1 ELSE 0 END)    AS open_major
+    FROM projects p
+    LEFT JOIN defects d ON d.project_id = p.project_id
+                       AND d.Defect_Status = 'Open'
+    GROUP BY p.project_id, p.project_name
+)
+SELECT project_name, open_critical, open_major,
+       CASE WHEN open_critical >= 2 OR open_major >= 5 THEN 'High Risk'
+            WHEN open_critical = 1 OR open_major >= 2  THEN 'Medium Risk'
+            ELSE 'Low Risk' END AS risk_level
+FROM counts;
+
+#22. Find projects whose defect count is greater than the average defect count per project.
+WITH per_project AS (
+    SELECT p.project_id, p.project_name, COUNT(d.defect_id) AS defect_count
+    FROM projects p
+    LEFT JOIN defects d ON d.project_id = p.project_id
+    GROUP BY p.project_id, p.project_name
+)
+SELECT project_name, defect_count
+FROM per_project
+WHERE defect_count > (SELECT AVG(defect_count * 1.0) FROM per_project);
+
+#23. Identify test executions with a salary-independent business rule: executions whose status is Fail and whose environment is Prod, using a subquery to identify the relevant test cases by project risk.
+SELECT te.*
+FROM test_executions te
+WHERE te.status = 'Fail'
+  AND te.environment = 'Prod'
+  AND te.testcase_id IN (
+      SELECT tc.testcase_id
+      FROM test_cases tc
+      WHERE tc.project_id IN (
+          SELECT project_id
+          FROM defects
+          WHERE Defect_Status = 'Open'
+          GROUP BY project_id
+          HAVING SUM(CASE WHEN severity = 'Critical' THEN 1 ELSE 0 END) >= 2
+              OR SUM(CASE WHEN severity = 'Major' THEN 1 ELSE 0 END) >= 5
+      )
+  );
+  
+#24. Find projects that have at least one Critical defect discovered in Prod.
+SELECT p.project_id, p.project_name
+FROM projects p
+WHERE EXISTS (
+    SELECT 1 FROM defects d
+    WHERE d.project_id = p.project_id
+      AND d.severity = 'Critical'
+      AND d.Found_environment = 'Prod'
+);
+
+#25. Find projects where every recorded defect is Closed. Decide how projects with zero defects should be handled.
+SELECT p.project_id, p.project_name
+FROM projects p
+JOIN defects d ON d.project_id = p.project_id
+GROUP BY p.project_id, p.project_name
+HAVING SUM(CASE WHEN d.Defect_Status = 'Closed' THEN 0 ELSE 1 END) = 0;
+
+#26. Identify test cases that have been executed more than once and have failed at least once, for regression investigation.
+SELECT tc.testcase_id, tc.testcase_name,
+       COUNT(*) AS total_runs,
+       SUM(CASE WHEN te.status = 'Fail' THEN 1 ELSE 0 END) AS fail_runs
+FROM test_cases tc
+JOIN test_executions te ON te.testcase_id = tc.testcase_id
+GROUP BY tc.testcase_id, tc.testcase_name
+HAVING COUNT(*) > 1
+   AND SUM(CASE WHEN te.status = 'Fail' THEN 1 ELSE 0 END) >= 1;
+   
+#27. Find projects whose Open Critical defect count is higher than that of every other project, returning all tied projects.
+WITH crit AS (
+    SELECT project_id, COUNT(*) AS open_critical
+    FROM defects
+    WHERE severity = 'Critical' AND Defect_Status = 'Open'
+    GROUP BY project_id
+)
+SELECT p.project_name, c.open_critical
+FROM crit c
+JOIN projects p ON p.project_id = c.project_id
+WHERE c.open_critical = (SELECT MAX(open_critical) FROM crit);
+
+#28. Use CTEs to prepare a project-level report containing test-case count, execution count, pass count, and open-defect count without accidentally multiplying counts during joins.
+WITH tc_counts AS (
+    SELECT project_id, COUNT(*) AS test_case_count
+    FROM test_cases
+    GROUP BY project_id
+),
+exec_counts AS (
+    SELECT tc.project_id,
+           COUNT(*) AS execution_count,
+           SUM(CASE WHEN te.status = 'Pass' THEN 1 ELSE 0 END) AS pass_count
+    FROM test_executions te
+    JOIN test_cases tc ON tc.testcase_id = te.testcase_id
+    GROUP BY tc.project_id
+),
+defect_counts AS (
+    SELECT project_id, COUNT(*) AS open_defect_count
+    FROM defects
+    WHERE Defect_Status = 'Open'
+    GROUP BY project_id
+)
+SELECT p.project_name,
+       COALESCE(t.test_case_count, 0)   AS test_case_count,
+       COALESCE(e.execution_count, 0)   AS execution_count,
+       COALESCE(e.pass_count, 0)        AS pass_count,
+       COALESCE(d.open_defect_count, 0) AS open_defect_count
+FROM projects p
+LEFT JOIN tc_counts t     ON t.project_id = p.project_id
+LEFT JOIN exec_counts e   ON e.project_id = p.project_id
+LEFT JOIN defect_counts d ON d.project_id = p.project_id;
+
+#29. Rank projects by the number of Open Critical defects. Projects with equal counts should receive the same rank.
+SELECT p.project_name,
+       COUNT(d.defect_id) AS open_critical,
+       DENSE_RANK() OVER (ORDER BY COUNT(d.defect_id) DESC) AS rnk
+FROM projects p
+LEFT JOIN defects d ON d.project_id = p.project_id
+                   AND d.severity = 'Critical'
+                   AND d.Defect_Status = 'Open'
+GROUP BY p.project_id, p.project_name;
+
+#30. Find the most recent execution for every test case, even when that test case has never been executed.
+WITH ranked AS (
+    SELECT tc.testcase_id, tc.testcase_name,
+           te.execution_id, te.execution_date, te.status,
+           ROW_NUMBER() OVER (PARTITION BY tc.testcase_id
+                              ORDER BY te.execution_date DESC, te.execution_id DESC) AS rn
+    FROM test_cases tc
+    LEFT JOIN test_executions te ON te.testcase_id = tc.testcase_id
+)
+SELECT testcase_id, testcase_name, execution_id, execution_date, status
+FROM ranked
+WHERE rn = 1;
+
+use qa_quality_analyzer;
